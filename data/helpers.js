@@ -50,6 +50,7 @@ function getProject(id) {
       if (!project) reject(404);
       const actions = await db('actions').where({ project_id: project.id });
       project.actions = actions;
+      project.completed = project.completed === 1 ? true : false;
       resolve(project);
     } catch (err) {
       reject(err);
