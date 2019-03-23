@@ -11,23 +11,32 @@ module.exports = {
 function addProject(project) {
   return new Promise(async (resolve, reject) => {
     const { name, description, completed } = project;
-    if (!name || !description) reject(400);
+    if (!name || !description) reject('keys');
     db('projects')
       .insert({ name, description, completed: completed ? completed : false })
       .then(id => resolve(id[0]))
-      .catch(error => reject(error));
+      .catch(error => {
+        if (error.message.includes('UNIQUE')) reject('unique');
+        else reject(error);
+      });
   });
 }
 
 function addAction(action) {
   return new Promise(async (resolve, reject) => {
-    const { description, notes, completed } = project;
-    if (!description || !notes) reject(400);
+    const { description, notes, completed, project_id } = action;
+    if (!description || !notes || !project_id) reject('keys');
     db('actions')
-      .insert({ description, notes, completed: completed ? completed : false })
-      .then(id => resolve(id))
+      .insert({
+        description,
+        notes,
+        completed: completed ? completed : false,
+        project_id,
+      })
+      .then(id => resolve(id[0]))
       .catch(error => {
-        if (error.errno === 19) reject(404);
+        if (error.message.includes('FOREIGN')) reject('foreign');
+        else if (error.message.includes('UNIQUE')) reject('unique');
         else reject(error);
       });
   });

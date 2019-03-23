@@ -19,11 +19,18 @@ router.post('/', (req, res) => {
   db.addProject(project)
     .then(id => res.status(201).json({ id }))
     .catch(error => {
-      if (error === 400)
-        return res
-          .status(400)
-          .json({ error: 'Project must include name and description keys.' });
-      else res.status(500).json({ error });
+      switch (error) {
+        case 'keys':
+          return res
+            .status(400)
+            .json({ error: 'Project must include name and description keys.' });
+        case 'unique':
+          return res
+            .status(400)
+            .json({ error: 'Project name must be unique.' });
+        default:
+          return res.status(500).json({ error });
+      }
     });
 });
 
