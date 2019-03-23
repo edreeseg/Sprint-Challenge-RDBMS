@@ -6,7 +6,10 @@ exports.up = function(knex, Promise) {
       .notNullable()
       .unique();
     tbl.string('description', 255).notNullable();
-    tbl.boolean('completed').defaultTo(false);
+    tbl
+      .boolean('completed')
+      .defaultTo(false)
+      .notNullable();
   });
 };
 

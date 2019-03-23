@@ -13,8 +13,8 @@ function addProject(project) {
     const { name, description, completed } = project;
     if (!name || !description) reject(400);
     db('projects')
-      .insert({ name, description, completed })
-      .then(id => resolve(id))
+      .insert({ name, description, completed: completed ? completed : false })
+      .then(id => resolve(id[0]))
       .catch(error => reject(error));
   });
 }
@@ -24,7 +24,7 @@ function addAction(action) {
     const { description, notes, completed } = project;
     if (!description || !notes) reject(400);
     db('actions')
-      .insert({ description, notes, completed })
+      .insert({ description, notes, completed: completed ? completed : false })
       .then(id => resolve(id))
       .catch(error => {
         if (error.errno === 19) reject(404);
